@@ -20,18 +20,17 @@ static short radAbstand = 250;
 static short radUmfang = 200;
 unsigned long boardTime;
 unsigned long moveTime;
+unsigned long lTime;
 bool kiesErkennung;
 bool kiesErkannt;
 bool autoL;
-bool autoSuchen;
-
 
 void setup() {
 
   kiesErkennung = false;
   kiesErkannt = false;
   autoL = false;
-  autoSuchen = false;
+  lTime = 0;
 
   //Wire
   Wire.begin();
@@ -92,6 +91,7 @@ void loop() {
   if(kiesErkennung) {
     if(kiesErkannt) {
       fahren.stop();
+      //Per led oder Bluetooth 
     }
     else {
       fahren.moveGerade(true);
@@ -107,25 +107,52 @@ void loop() {
   if(autoL) {
     //vier Phasen
     //Suchen || Zielen || Schießen || Fahren
-    if(autoSuchen) {
-    //Suchen
+    //Suchen (1)
       //sweeping von links nach rechts
       //aufzeichnung der Daten des Ultraschallsensors
       //Auswerten der Daten
       //zurückschwenken bis zu maximalem ausschlag
-    //Zielen
+    //Zielen (2)
       //kleiner Schwenk mit tof sensor
       //Bis maximaler Wert gefunden
-    //Schießen
+    //Schießen (3)
       //auwertung der Distanz
       //ausrichten der Düse
       //Schießen
-    //Fahren
+    //Fahren (4)
       //ausrichten an evtl Bodenmarkierungen
       //Fahren bis zum nächsten markierungspunkt
       //Suchen starten
+    if(lTime == 0) {
+      lTime = millis();
     }
+    int a = 1;
+    int b = 1;
+    switch(a) {
+      //Suchen
+      case 1:
+        switch(b) {
+          //Schwenken rechts
+          case 1:
+            break;
+          //Schwenken links
+          case 2:
+            break;
+        }
+        break;
+      case 2:
+        a = 3;
+        break;
+      case 3:
+        a = 4;
+        break;
+      case 4:
+        a = 1;
+        break;
+    }
+
   }
 }
+
 
 

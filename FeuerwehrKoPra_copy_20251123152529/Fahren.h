@@ -24,6 +24,10 @@ class Fahren
     void rotate(bool dir);
     void stop();
   private:
+    short pin1;
+    short pin2;
+    short pin3;
+    short pin4; 
 };
 
 #endif
