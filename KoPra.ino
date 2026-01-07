@@ -48,10 +48,7 @@ void setup() {
     pinMode(12, OUTPUT);
     pinMode(13, OUTPUT);
     //Motoren
-    pinMode(30, OUTPUT);
-    pinMode(31, OUTPUT);
-    pinMode(32, OUTPUT);
-    pinMode(33, OUTPUT);
+    fahren.setup();
     //Sensoren
     mypixy.init();
   
@@ -63,22 +60,31 @@ void setup() {
 void loop() {
   //getimete funktionen werden nicht über delay() sondern über eine Abfrage der timer Variable ausgesetzt, um multitasking zu ermöglichen
 
-  //SerialBluetooth
+  fahren.moveGerade(true, FAST);
+
+  delay(3000);
+
+  fahren.moveGerade(true, SLOW);
+
+  delay(3000);
+
+  //SerialBluetooth 
+  /*
   if(Serial1.available() > 0) {
     char DATA = Serial1.read();
     switch(DATA) {
       case 'w':
         fahren.stop();
-        fahren.moveGerade(true);
+        fahren.moveGerade(true, 255);
         break;
       case 'a':
         fahren.stop();
-        fahren.turn(true);
+        fahren.turn(true, 255);
         break;
       case 'd':
         fahren.stop();
-        fahren.turn(false);
-        break;
+        fahren.turn(false, 255);
+        break;w
       case 's':
         fahren.stop();
         break;
@@ -95,7 +101,7 @@ void loop() {
       //Per led oder Bluetooth 
     }
     else {
-      fahren.moveGerade(true);
+      fahren.moveGerade(true, 255);
     }
   }
 
@@ -153,6 +159,7 @@ void loop() {
     }
 
   }
+  */
 }
 
 

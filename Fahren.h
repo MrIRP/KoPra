@@ -16,12 +16,16 @@
 class Fahren
 {
   public:
+   
+    #define FAST 255
+    #define SLOW 50
     //Constructor
     Fahren();
     //Methoden
-    void moveGerade(bool direction);
-    void turn(bool direction);
-    void rotate(bool direction);
+    void setup();
+    void moveGerade(bool direction, short speed);
+    void turn(bool direction, short speed);
+    void rotate(bool direction, short speed);
     void stop();
   private:
     short pinLinksVor;
