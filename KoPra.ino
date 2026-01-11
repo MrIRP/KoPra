@@ -7,10 +7,12 @@
 #include <Servo.h>
 
 #include "Fahren.h"
+#include "SensorLib.h"
 
 Fahren fahren;
 Pixy2 mypixy;
 Servo myservo;
+UltrasonicSensor ultra(49, 48);
 
 //Variablen
 //-------------------------------------------------------------------------
@@ -51,6 +53,7 @@ void setup() {
     fahren.setup();
     //Sensoren
     mypixy.init();
+    ultra.begin();
   
   //Servomotor
   myservo.attach(6);
@@ -60,33 +63,42 @@ void setup() {
 void loop() {
   //getimete funktionen werden nicht über delay() sondern über eine Abfrage der timer Variable ausgesetzt, um multitasking zu ermöglichen
 
-  fahren.moveGerade(true, FAST);
+  if(ultra.update()){
+    float distance = ultra.getValue();
 
-  delay(3000);
-
-  fahren.moveGerade(true, SLOW);
-
-  delay(3000);
+    if(distance >= 0){
+      Serial1.print("Distance: ");
+      Serial1.print(distance);
+      Serail1.println(" cm");
+    }
+  }
 
   //SerialBluetooth 
-  /*
+  
   if(Serial1.available() > 0) {
     char DATA = Serial1.read();
     switch(DATA) {
       case 'w':
-        fahren.stop();
         fahren.moveGerade(true, 255);
+        //Serial1.println("w");
         break;
       case 'a':
-        fahren.stop();
         fahren.turn(true, 255);
+        //Serial1.println("a");
         break;
       case 'd':
-        fahren.stop();
         fahren.turn(false, 255);
-        break;w
+        //Serial1.println("d");
+        break;
       case 's':
         fahren.stop();
+        //Serial1.println("s");
+        break;
+      case 'l':
+        fahren.rotate(true, 255);
+        break;
+      case 'r':
+        fahren.rotate(false, 255);
         break;
     }
   }
@@ -159,7 +171,7 @@ void loop() {
     }
 
   }
-  */
+  
 }
 
 

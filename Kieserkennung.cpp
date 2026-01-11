@@ -1,6 +1,6 @@
 /*
 
-  Kieserkennung.h - Library for erkennen das Kies.
+  Kieserkennung.cpp - Library for erkennen das Kies.
 
   Created by Jakob Hawlat, December 04 2025.
 
