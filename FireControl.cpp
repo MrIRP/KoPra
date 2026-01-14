@@ -3,6 +3,9 @@
 #include "TOF_sensor.h"
 #include "fastop.h"
 
+#define G_EARTH 9.81
+#define Y_0     0
+
 struct zielPos{
   int    x;
   short  phi;
@@ -53,15 +56,15 @@ void Feuern(short firingAngle, Turm_servo servo /*, Pumpe*/) //Düse ausrichten 
   
 }
 
-uint_16_t calculateFiringAngle(uint_16_t distance; uint_8_t phi; uint_16_t muzzle_vel)
+uint16_t calculateFiringAngle(uint16_t distance, uint8_t phi, uint16_t muzzle_vel)
 {
-  uint_16_t alpha;
+  uint16_t alpha;
   
-  uint_16_t x_z = distance * cos(phi);
-  uint_16_t y_z = distance * sin(phi);
-  uint_16_t gxz = G_EARTH*pow(x_z, 2)/(2*pow(muzzle_vel, 2));
+  uint16_t x_z = distance * cos(phi);
+  uint16_t y_z = distance * sin(phi);
+  uint16_t gxz = G_EARTH*pow(x_z, 2)/(2*pow(muzzle_vel, 2));
 
-  alpha = (uint_16_t)atan((x_z - sqrt(pow(x_z, 2), - 4*gxz*(Y_0 - y_z - gxz)))*1/gxz); //Winkelberechnung
+  alpha = (uint16_t)atan((x_z - sqrt((pow(x_z, 2), - 4*gxz*(Y_0 - y_z - gxz)))*1/gxz)); //Winkelberechnung
 
   return alpha;
 }
