@@ -12,7 +12,7 @@ uint8_t currentPos;
 void initServo ()
 {
   myServo.attach(ServoPin);
-  currentPos = zeroServo;
+  currentPos = zeroPitch;
 }
 
 uint8_t readPos()

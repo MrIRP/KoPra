@@ -12,7 +12,7 @@
 Fahren fahren;
 Pixy2 mypixy;
 Servo myservo;
-UltrasonicSensor ultra(49, 48);
+//UltrasonicSensor ultra(49, 48);
 
 //Variablen
 //-------------------------------------------------------------------------
@@ -53,7 +53,7 @@ void setup() {
     fahren.setup();
     //Sensoren
     mypixy.init();
-    ultra.begin();
+    //ultra.begin();
   
   //Servomotor
   myservo.attach(6);
@@ -63,7 +63,7 @@ void setup() {
 void loop() {
   //getimete funktionen werden nicht über delay() sondern über eine Abfrage der timer Variable ausgesetzt, um multitasking zu ermöglichen
 
-  if(ultra.update()){
+  /*if(ultra.update()){
     float distance = ultra.getValue();
 
     if(distance >= 0){
@@ -71,7 +71,7 @@ void loop() {
       Serial1.print(distance);
       Serail1.println(" cm");
     }
-  }
+  }*/
 
   //SerialBluetooth 
   

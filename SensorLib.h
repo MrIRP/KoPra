@@ -8,6 +8,9 @@
 
 */
 
+#ifndef SENSORLIB_H
+#define SENSORLIB_H
+
 #include "SensorLib.h"
 
 UltrasonicSensor ultra(9, 10);  // Trigger, Echo
@@ -35,3 +38,5 @@ void loop() {
 
   // Other code runs without blocking
 }
+
+#endif

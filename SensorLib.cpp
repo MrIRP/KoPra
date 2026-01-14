@@ -8,8 +8,7 @@
 
 */
 
-#ifndef SENSORLIB_H
-#define SENSORLIB_H
+
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -142,4 +141,4 @@ class TOFSensor : public Sensor {
     bool isReady() override { return (millis() - lastMeasurement >= 50); }
 };
 
-#endif
+
