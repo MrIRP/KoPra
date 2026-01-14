@@ -3,9 +3,10 @@
 
 class Turm_servo{
   public:
-    Servo   myServo;
-    void    initServo();
-    short   pitch(short pitch);
+    Servo     myServo;
+    void      initServo();
+    uint8_t   readPos();
+    uint8_t   pitch(uint8_t pitch);
   private:
-    short   currentPos;
+    uint8_t   currentPos; 
 };

@@ -2,30 +2,52 @@
 #include "fastop.h"
 
 Servo   myServo;
-short   currentPos;
+uint8_t currentPos;
 
-void initServo (short ServoPin){
+#define ServoPin     2
+#define maxPitch    +90
+#define minPitch    -90
+#define zeroPitch   +1
 
+void initServo ()
+{
   myServo.attach(ServoPin);
-
+  currentPos = zeroServo;
 }
 
-short pitch (short pitch){
+uint8_t readPos()
+{
+  return currentPos;
+}
 
-  if(currentPos - pitch >= 0){
-    while (currentPos != pitch){
+uint8_t pitch (uint8_t pitch)
+{
+  uint8_t pitchDiff = currentPos - pitch;
+
+  //positiver Pitch
+  if(pitchDiff >= 0)
+  { 
+    if(pitchDiff < pitch){pitch = pitchDiff;}
+
+    while (currentPos != pitch)
+    {
       myServo.write(currentPos);
       currentPos++;
       fastop::delay(10);
     }
+
     return currentPos;
   }
 
-  while (currentPos != pitch){
+  //negativer Pitch
+  if(pitchDiff > pitch){pitch = pitchDiff;}
+  
+  while (currentPos != pitch)
+  {
     myServo.write(currentPos);
     currentPos--;
     fastop::delay(10);
   }
-  return currentPos;
 
+  return currentPos;
 }
