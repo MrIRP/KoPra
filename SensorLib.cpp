@@ -6,10 +6,7 @@
 
   Not released into the public domain.
 
-*/
 
-#ifndef SENSORLIB_H
-#define SENSORLIB_H
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -141,5 +138,4 @@ class TOFSensor : public Sensor {
     float getValue() override { return distance; }
     bool isReady() override { return (millis() - lastMeasurement >= 50); }
 };
-
-#endif
+*/

@@ -8,11 +8,12 @@
 
 #include "Fahren.h"
 #include "SensorLib.h"
+#include "Kieserkennung.h"
 
 Fahren fahren;
 Pixy2 mypixy;
 Servo myservo;
-UltrasonicSensor ultra(49, 48);
+Kieserkennung kieserkennung;
 
 //Variablen
 //-------------------------------------------------------------------------
@@ -20,9 +21,11 @@ UltrasonicSensor ultra(49, 48);
 
 static short radAbstand = 250;
 static short radUmfang = 200;
-unsigned long boardTime;
+unsigned long kiesTime;
 unsigned long moveTime;
 unsigned long lTime;
+uint8_t r, g, b;
+uint8_t sollR, sollG, sollB;
 bool kiesErkennung;
 bool kiesErkannt;
 bool autoL;
@@ -33,6 +36,10 @@ void setup() {
   kiesErkannt = false;
   autoL = false;
   lTime = 0;
+
+  sollR = 100;
+  sollG = 100;
+  sollB = 100;
 
   //Wire
   Wire.begin();
@@ -53,7 +60,6 @@ void setup() {
     fahren.setup();
     //Sensoren
     mypixy.init();
-    ultra.begin();
   
   //Servomotor
   myservo.attach(6);
@@ -62,16 +68,6 @@ void setup() {
 
 void loop() {
   //getimete funktionen werden nicht über delay() sondern über eine Abfrage der timer Variable ausgesetzt, um multitasking zu ermöglichen
-
-  if(ultra.update()){
-    float distance = ultra.getValue();
-
-    if(distance >= 0){
-      Serial1.print("Distance: ");
-      Serial1.print(distance);
-      Serail1.println(" cm");
-    }
-  }
 
   //SerialBluetooth 
   
@@ -107,13 +103,18 @@ void loop() {
   //-----------------------------------------------------------------------
     //Kies wird von Sensoren: Gyro, Pixycam erkannt
   if(kiesErkennung) {
-    //kies erkennen
-    if(kiesErkannt) {
-      fahren.stop();
-      //Per led oder Bluetooth 
+    if(kiesTime - millis() < -200) {
+      //kies erkennen
+      mypixy.changeProg("video");
+      if(mypixy.video.getRGB(mypixy.frameWidth / 2, mypixy.frameHeight / 2, &r, &g, &b)) {
+        kiesTime = millis();
+      }
     }
-    else {
-      fahren.moveGerade(true, 255);
+
+    if(kieserkennung.weichtBodenAb(r, g, b, sollR, sollG, sollB)) {
+      fahren.stop();
+      Serial1.println("Boden wurde erkannt");
+      //LED muss angeschaltet werden und lautsprecher muss Ton ausgeben
     }
   }
 

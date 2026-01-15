@@ -6,7 +6,10 @@
 
   Not released into the public domain.
 
-*/
+
+
+#ifndef SENSORLIB_H
+#define SENSORLIB_H
 
 #include "SensorLib.h"
 
@@ -35,3 +38,6 @@ void loop() {
 
   // Other code runs without blocking
 }
+
+#endif
+*/
