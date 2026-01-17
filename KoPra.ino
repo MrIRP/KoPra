@@ -8,12 +8,12 @@
 
 #include "Fahren.h"
 #include "Kieserkennung.h"
-#include "VL53L0X.h"
+#include "Turm.h"
 
 Fahren fahren;
 Pixy2 mypixy;
-Servo myservo;
 Kieserkennung kieserkennung;
+Turm myTurm;
 
 //Variablen
 //-------------------------------------------------------------------------
@@ -53,23 +53,35 @@ void setup() {
   Serial.println(Serial1.available());
 
   //PinModes
-    //LED
-    pinMode(12, OUTPUT);
-    pinMode(13, OUTPUT);
-    //Motoren
-    fahren.setup();
-    //Sensoren
-    mypixy.init();
-  
-  //Servomotor
-  myservo.attach(6);
-
+  //LED
+  pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
+  //Motoren
+  fahren.setup();
+  //Sensoren
+  mypixy.init();
+  myTurm.initTurm();
+  myTurm.turnSensorOn();
 }
 
 void loop() {
   //getimete funktionen werden nicht über delay() sondern über eine Abfrage der timer Variable ausgesetzt, um multitasking zu ermöglichen
-
-  //SerialBluetooth 
+  Serial.println("ELLO");
+  myTurm.printSensorReadings();
+  delay(500);
+  
+  //SerialBluetooth
+  if(Serial1.available() > 0) {
+    char DATA = Serial1.read();
+    switch(DATA) {
+      case 'u':
+        myTurm.pitch(1);
+        break;
+      case 'j':
+        myTurm.pitch(-1);
+        break;
+    }
+  }
   
   if(Serial1.available() > 0) {
     char DATA = Serial1.read();
@@ -98,7 +110,7 @@ void loop() {
         break;
     }
   }
-
+  /*
   //Kieserkennung
   //-----------------------------------------------------------------------
     //Kies wird von Sensoren: Gyro, Pixycam erkannt
@@ -172,7 +184,7 @@ void loop() {
     }
 
   }
-  
+  */
 }
 
 

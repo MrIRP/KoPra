@@ -1032,3 +1032,27 @@ bool VL53L0X::performSingleRefCalibration(uint8_t vhv_init_byte)
 
   return true;
 }
+
+//MEINS
+
+void VL53L0X::initSensor()
+{
+  Serial.begin(9600);
+  setTimeout(5000);
+  if(!init())
+  {
+    Serial.println("Failed to detect and initialize VL53L0X");
+    while(1) {} //death loop
+  }
+
+  // long range settings
+  setSignalRateLimit(0.005);
+  setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 20);
+  setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
+
+  // reduce timing budget to 20 ms (default is about 33 ms)
+  // setMeasurementTimingBudget(20000);
+
+  // increase timing budget to 200 ms
+  setMeasurementTimingBudget(300000);
+}

@@ -135,6 +135,9 @@ class VL53L0X
     inline uint16_t getTimeout() { return io_timeout; }
     bool timeoutOccurred();
 
+    //MEINS
+    void initSensor();
+
   private:
     // TCC: Target CentreCheck
     // MSRC: Minimum Signal Rate Check
@@ -176,5 +179,4 @@ class VL53L0X
 };
 
 #endif
-
 
