@@ -14,6 +14,7 @@ Fahren fahren;
 Pixy2 mypixy;
 Kieserkennung kieserkennung;
 Turm myTurm;
+int angle = 86;
 
 //Variablen
 //-------------------------------------------------------------------------
@@ -66,23 +67,32 @@ void setup() {
 
 void loop() {
   //getimete funktionen werden nicht über delay() sondern über eine Abfrage der timer Variable ausgesetzt, um multitasking zu ermöglichen
-  Serial.println("ELLO");
-  myTurm.printSensorReadings();
-  delay(500);
-  
-  //SerialBluetooth
-  if(Serial1.available() > 0) {
-    char DATA = Serial1.read();
-    switch(DATA) {
-      case 'u':
-        myTurm.pitch(1);
+  //myTurm.pitch(86);
+  //myTurm.printSensorReadings();
+  //myTurm.scanForTarget(myTurm.target, 86);
+  //myTurm.servoTestDrive();
+
+  if(Serial.available() > 0) {
+    char cmd = Serial.read();
+    switch(cmd){
+      case 'w':
+        angle++;
+        myTurm.pitch(angle);
+        Serial.print("\nUP: ");
+        myTurm.printServoReadings();
         break;
-      case 'j':
-        myTurm.pitch(-1);
+      case 's':
+        angle--;
+        myTurm.pitch(angle);
+        Serial.print("\nDOWN: ");
+        myTurm.printServoReadings();
         break;
     }
   }
-  
+  myTurm.printSensorReadings();
+  delay(500);
+  /*
+  //SerialBluetooth
   if(Serial1.available() > 0) {
     char DATA = Serial1.read();
     switch(DATA) {
@@ -109,7 +119,7 @@ void loop() {
         fahren.rotate(false, 255);
         break;
     }
-  }
+  }*/
   /*
   //Kieserkennung
   //-----------------------------------------------------------------------

@@ -1037,7 +1037,6 @@ bool VL53L0X::performSingleRefCalibration(uint8_t vhv_init_byte)
 
 void VL53L0X::initSensor()
 {
-  Serial.begin(9600);
   setTimeout(5000);
   if(!init())
   {
@@ -1046,13 +1045,13 @@ void VL53L0X::initSensor()
   }
 
   // long range settings
-  setSignalRateLimit(0.005);
-  setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 20);
+  setSignalRateLimit(0.01);
+  setVcselPulsePeriod(VL53L0X::VcselPeriodPreRange, 28);
   setVcselPulsePeriod(VL53L0X::VcselPeriodFinalRange, 14);
 
   // reduce timing budget to 20 ms (default is about 33 ms)
   // setMeasurementTimingBudget(20000);
 
   // increase timing budget to 200 ms
-  setMeasurementTimingBudget(300000);
+  setMeasurementTimingBudget(200000);
 }

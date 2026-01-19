@@ -11,7 +11,7 @@ class Turm
     
   //Pin numbers on the board
   #define XSHUT_PIN 29
-  #define SERVO_PIN 27
+  #define SERVO_PIN 23
   #define PUMPE_PIN 28
 
   //Constants
@@ -46,7 +46,7 @@ class Turm
   void      initTurm ();
 
   void      printTargetDistance();
-  void      ScanForTarget(ZielPosition &target, uint8_t zeroAngle);
+  void      scanForTarget(ZielPosition &target, uint8_t zeroAngle);
   void      fireOnTarget (ZielPosition &target);
   void      jiggle (uint8_t firingAngle);
   uint8_t   calculateFiringAngle (ZielPosition &target, uint8_t muzzleVelocity);
@@ -56,19 +56,19 @@ class Turm
   void      turnSensorOn ();
   void      turnSensorOff ();
 
+  void      servoTestDrive();
   void      printServoReadings();
-  uint8_t   pitch(uint8_t pitch);
+  int       pitch(int targetPitch);
 
   void      pumpOn();
   void      pumpOff();
-
+    VL53L0X TOFsensor;
+  ZielPosition target;
   private:
 
-  VL53L0X TOFsensor;
+
   bool    TOFstateOn;
 
   Servo   myServo;
   uint8_t myServoPitch;
-
-  ZielPosition target;
 };

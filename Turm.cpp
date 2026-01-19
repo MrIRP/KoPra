@@ -4,16 +4,15 @@
 #include <Servo.h>
 #include <Arduino.h>
 
-#include "fastop.h"
 #include "VL53L0X.h"
-
+#include "fastop.h"
 #include "Turm.h"
 
 
 //Pin numbers on the board
 #define XSHUT_PIN 52
-#define SERVO_PIN 10
-#define PUMP_PIN 10
+#define SERVO_PIN 2
+#define PUMP_PIN  10
 
 //Constants
 #define G_EARTH   9.81
@@ -25,7 +24,7 @@
 #define SPRAY_THROTTLE 10
 
 //max scanning angle
-#define SCAN_ANGLE 5
+#define SCAN_ANGLE 10
 
 //Intervall of valid target distances in mm
 #define VALID_MIN_DISTANCE 1200
@@ -35,9 +34,9 @@
 #define MUZZLE_VEL  3
 
 //Servo parameters
-#define ZERO_PITCH  0
-#define MAX_PITCH   (90 - ZERO_PITCH)
-#define MIN_PITCH   (90 + ZERO_PITCH)
+#define ZERO_PITCH  86
+#define MAX_PITCH   160
+#define MIN_PITCH   0
 
 struct ZielPosition
 {
@@ -62,42 +61,44 @@ ZielPosition target =
 
 //setup function
 void Turm::initTurm(){
-  Serial.begin(10000);
   pinMode(XSHUT_PIN, OUTPUT);
   pinMode(SERVO_PIN, OUTPUT);
   pinMode(PUMP_PIN, OUTPUT);
 
-  myServo.attach(SERVO_PIN);
+  myServo.attach(SERVO_PIN, 550, 2370);
   myServoPitch = ZERO_PITCH;
 }
 
 //Zielerfassung und Feuermechanismus ----------------------------------------------------------
 
 void Turm::printTargetDistance(){
-  Serial1.println("Target distance: ");
+  Serial1.print("\nTarget distance: ");
   Serial1.print(target.range);
   Serial1.print(" mm");
-  Serial1.println("Target angle:    ");
+  Serial1.print(" -- Target angle:    ");
   Serial1.print(target.angle);
   Serial1.print(" mm");
 }
 
-void Turm::ScanForTarget(ZielPosition &target, uint8_t zeroAngle)
+void Turm::scanForTarget(ZielPosition &target, uint8_t const zeroAngle)
 {
-  uint16_t tempDistance;
-  pitch(zeroAngle);
-  for(int i = -SCAN_ANGLE; i > SCAN_ANGLE; i++)
+  uint16_t tempDistance = -1;
+  pitch(zeroAngle - SCAN_ANGLE);
+  for(int i = -SCAN_ANGLE; i <= SCAN_ANGLE; i++)
   {
     tempDistance = sensorGetDistance();
-    if (tempDistance < VALID_MAX_DISTANCE && tempDistance > VALID_MIN_DISTANCE)
+    if ((VALID_MAX_DISTANCE > tempDistance) && (VALID_MIN_DISTANCE < tempDistance))
     {
       target.range = tempDistance;
       target.angle = myServoPitch;
+      Serial.print("VALID TARGET");
     }
-
-    myServo.write(myServoPitch + i);
-    myServoPitch += i;
-    fastop::delay(20);
+    Serial.print("\n target values: ");
+    Serial.print(tempDistance);
+    Serial.print("mm -- angle: ");
+    Serial.print(myServoPitch);
+    pitch(zeroAngle + i);
+    delay(1000);
   }
   pitch(zeroAngle);
 }
@@ -123,14 +124,14 @@ void Turm::jiggle (uint8_t firingAngle)
     {
       myServo.write(firingAngle + i);
       myServoPitch += i;
-      fastop::delay(SPRAY_THROTTLE);
+      delay(SPRAY_THROTTLE);
     }
 
     for(int i = -SPRAY_ANGLE; i > SPRAY_ANGLE; i--)
     {
       myServo.write(myServoPitch + i);
       myServoPitch += i;
-      fastop::delay(SPRAY_THROTTLE);
+      delay(SPRAY_THROTTLE);
     }
   }
   pitch(firingAngle);
@@ -150,15 +151,16 @@ uint8_t Turm::calculateFiringAngle (ZielPosition &target, uint8_t muzzleVelocity
 
 void Turm::printSensorReadings()
 {
-  Serial.println("TOFsensor distance: ");
-  Serial.print(sensorGetDistance());
+  int temp = sensorGetDistance();
+  Serial.print("\nTOFsensor distance: ");
+  Serial.print(temp);
   Serial.print(" mm");
 }
 
 uint16_t Turm::sensorGetDistance()
 {
   if(!TOFstateOn) {return -1;}
-  uint16_t distance = TOFsensor.readRangeContinuousMillimeters();
+  uint16_t distance = TOFsensor.readRangeSingleMillimeters();
   if(TOFsensor.timeoutOccurred()) {return -1;}
   return distance;
 }
@@ -174,42 +176,38 @@ void Turm::turnSensorOff()
 
 //Servo----------------------------------------------------------------------------------------
 
-void Turm::printServoReadings(){
-  Serial1.println("Servo angle theoretical: ");
-  Serial1.print(myServoPitch);
-  Serial1.print(" °");
+void Turm::servoTestDrive()
+{
+  pitch(160);
+  printServoReadings();
+  delay(1000);
+  pitch(86);
+  printServoReadings();
+  delay(1000);
+  pitch(0);
+  printServoReadings();
+  delay(1000);
 }
 
-//Änderung der Turmneigung
-uint8_t Turm::pitch(uint8_t pitch)
+void Turm::printServoReadings()
 {
-  //calculate pitchDifference from current to new pitch
-  uint8_t pitchDiff = myServoPitch - pitch;
+  Serial.print("\nServo angle: ");
+  Serial.print(myServoPitch);
+}
+int Turm::pitch(int targetPitch)
+{
+  targetPitch = constrain(targetPitch, MIN_PITCH, MAX_PITCH);
 
-  //for positive pitch
-  if(pitchDiff >= 0)
+  while (myServoPitch != targetPitch)
   {
-    if (pitchDiff < pitch) {pitch = pitchDiff;}
-
-    while(myServoPitch < pitch)
-    {
-      myServo.write(myServoPitch);
+    if (myServoPitch < targetPitch)
       myServoPitch++;
-      fastop::delay(10);
-    }
-
-    return myServoPitch;
-  }
-
-  //for negative pitch
-  if(pitchDiff > pitch){pitch = pitchDiff;}
-
-  while (myServoPitch > pitch)
-  {
+    else
+      myServoPitch--;
     myServo.write(myServoPitch);
-    myServoPitch--; 
-    fastop::delay(10);
+    fastop::delay(1000000);
   }
+  return myServoPitch;
 }
 
 //Pumpe----------------------------------------------------------------------------------------
