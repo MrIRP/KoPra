@@ -1,0 +1,1 @@
+Wer hier reinschaut ist selber schuld. Der code ist extra unübersichtlich geschrieben und auf maximalen schaden ausgelegt. Mein Dank geht raus an chatty und 1001 YouTube tutorials, die mich an diesen Punkt gebracht haben XD
